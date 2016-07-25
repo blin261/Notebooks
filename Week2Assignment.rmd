@@ -1,0 +1,81 @@
+---
+title: "RBridgeWeek2Assignment"
+author: "Bin Lin"
+date: "2016-7-23"
+output: html_document
+---
+
+
+"n choose r" means n!/((n-r)!*r!) in probability theory. One example of explaining the idea of "n choose r" is to choose 16 basketball teams out of 30 in NBA to play in the playoff games. If every team has an equal chance of being picked up, there will be 145422675 possibilities.  Based on this example, we can notice, n and r can only be positive integers and r can not be greater than n. R already has a built-in function for choose(). For week 2 assignment, I need to rewrite the choose() function using my own code. Not only I should tell users the final answer, I will also tell them what is the data entry error, if there are any. 
+
+```{r}
+new_choose <- function(n, r) {
+  
+  ##Making sure once we pass integers to this function, R will evaluate the arguments as integer.
+  if(is.numeric(n) && is.numeric(r)){
+    epislon <- 0.000000000001            ##I set it up to be a very small number
+    if(abs(round(n)-n) <= epislon){
+      n <- as.integer(n)
+    }
+    if(abs(round(r)-r) <= epislon){
+      r <- as.integer(r)
+    }
+  }
+  
+  ##Making sure the arguements that are entered satisfied the requirement for choose() function
+  if (!is.integer(n) || !is.integer(r) || n <= 0 || r <= 0){
+    print("Please enter two integers greater than 0")
+  } else if (r > n) {
+    print("The first argument needs to be larger than the second")
+  } else {
+    ## The way I calculate the factorial
+    nfactorial<-1
+    for (i in 1:n) {
+      nfactorial <- nfactorial * i
+    }
+    rfactorial<-1
+    for (i in 1:r){
+      rfactorial <- rfactorial * i
+    }
+    n_minus_r_factorial <- 1
+    if (n>r){
+      ##If n=r, this way of calculating factorial won't work, that is why I use a if statement to control it.
+      for (i in 1:(n-r)){
+        n_minus_r_factorial <- n_minus_r_factorial * i
+      }
+    }
+    result <- nfactorial / (rfactorial * n_minus_r_factorial)
+    print(result)
+    }
+}
+```
+
+
+```{r}
+new_choose(7, 8)        #error
+new_choose(7.5, 8.5)    #error
+new_choose("Hi", 6)     #error
+new_choose(TRUE,FALSE)  #error
+new_choose(5,5)
+new_choose(9, 8)
+new_choose(-1,-2)       #error
+new_choose(30,16)
+```
+
+The following is the result I got by trying these test code.
+> new_choose(7, 8)
+[1] "The first argument needs to be larger than the second"
+> new_choose(7.5, 8.5)
+[1] "Please enter two integers greater than 0"
+> new_choose("Hi", 6)
+[1] "Please enter two integers greater than 0"
+> new_choose(TRUE,FALSE)
+[1] "Please enter two integers greater than 0"
+> new_choose(5,5)
+[1] 1
+> new_choose(9, 8)
+[1] 9
+> new_choose(-1,-2)
+[1] "Please enter two integers greater than 0"
+> new_choose(30,16)
+[1] 145422675
