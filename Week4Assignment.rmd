@@ -1,0 +1,76 @@
+---
+title: "Week4Assignment"
+author: "Bin Lin"
+date: "2016-8-7"
+output: html_document
+---
+
+This week's assignment is focusing on the Exploratory Data Analysis. The dataset I choose is from the Udacity website: https://github.com/tollek/udacity-data-science/blob/master/p4/l2/stateData.csv. This is a very short dataset, in the meantime, it is also missing units among those variables. However, since I am just analyzing the relationship between some of the variables. In the end, I still come up with reasonable findings from this dataset.  
+
+
+First of all, I need to install the ggplot2 package. The base graphics from R is already very powerful in terms of producing quality graphics. ggplot2 can add more complexity to the graph. In addition, it is easier to use ggplot2 to modify the color, shape and other features of the graph.
+
+```{r}
+install.packages("ggplot2", repos = "http://cran.us.r-project.org")
+require(ggplot2)
+```
+
+
+I downloaded the data into my local machine. The following code can help me load the data and figure out what are categorical variables and continuous variables.
+
+```{r}
+raw_data<-read.csv("stateData.csv",sep=",")
+head(raw_data)
+str(raw_data)
+```
+
+
+I replaced the data in the state region column from integer into human readable string datatype. 
+```{r}
+raw_data$state.region[raw_data$state.region == "1"] <- "Northeast"
+raw_data$state.region[raw_data$state.region == "2"] <- "South"
+raw_data$state.region[raw_data$state.region == "3"] <- "Midwest"
+raw_data$state.region[raw_data$state.region == "4"] <- "West"
+head(raw_data)
+table(raw_data$state.region)
+
+```
+
+
+The code to generate a box plot. According to the graph the interquatile range of life expectancy in US among different states is about 70 to 72. 
+```{r}
+ggplot(data=raw_data) + geom_boxplot(aes(y = life.exp, x = 1), fill='blue')
+
+#Base graphic code for boxplot
+#boxplot(raw_data$life.exp)
+```
+
+
+The histogram shows average income among 50 states is mostly spreading between $35,000 to $54,000, with one state that has the highest average income which is around $63,000.
+
+```{r}
+ggplot(data=raw_data) + geom_histogram(aes(x = income), fill='blue')
+
+#Base graphic code for histogram
+#hist(raw_data$income, main = "Average Household Income in US by States", xlab = "Income Range")
+```
+
+
+The scatterplot shows in the south region of America, the trend of higher illeteracy rate and lower income is very prominent, but the opposite trend shows in the Northeast region. The graph also shows states that have higher average income, the population tend to have higher life expectancy as a lot of these points located at the top left side of the graph. 
+
+```{r}
+ggplot(data=raw_data, aes(x = illiteracy, y = income, color = life.exp)) + geom_point() + facet_wrap(~state.region)
+
+#Base graphic code for scatterplot
+#plot(raw_data$income ~ raw_data$illiteracy, data = raw_data, main = "Relationship Between Illiteracy Rate and Income in US by States", xlab = "Illiteracy", ylab = "Income")
+```
+
+
+The second scatterplot shows that states with higher high school graduation rate (low illiteracy) tend to have population that has higher average income. The murder rate of each state might have inverse relationship with the life expectancy of the pulation in that state, as the murder rate increases, the life expectancy decreases. 
+
+```{r}
+ggplot(data=raw_data, aes(x = murder, y = life.exp, color = highSchoolGrad)) + geom_point()
+
+#Base graphic code for scatterplot
+#plot(raw_data$life.exp ~ raw_data$murder, data = raw_data, main = "Relationship Between Murder Rate and Life Expectancy in US by States", xlab = "Murder Rate", ylab = "Life Expectancy")
+```
