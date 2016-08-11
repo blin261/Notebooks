@@ -1,0 +1,73 @@
+---
+title: "R Bridge -Final Project"
+author: "Bin Lin"
+date: "2016-8-10"
+output: html_document
+---
+
+The final project is to perform exploratory data analysis on a dataset named hflights (https://cran.r-project.org/web/packages/hflights/hflights.pdf). It contains data of commercial domestic flights that departed Houston (IAH and HOU) in 2011. The purpose of this project is to show the ability to (1) use R packages, (2) change the shape of data in a data frame, and (3) provide basic summary statistics and graphics as part of my exploratory data analysis.
+
+
+First of all, I need to install all the packages that I am going to use in this markdown file. 
+```{r}
+
+install.packages("ggplot2", repos="http://cran.rstudio.com/")
+library(ggplot2)
+install.packages("hflights", repos="http://cran.rstudio.com/")
+library(hflights)
+install.packages("dplyr", repos="http://cran.rstudio.com/")
+library(dplyr)
+```
+
+
+I take a look at the data first before I get started.
+```{r}
+head(hflights)
+str(hflights)
+summary(hflights)
+```
+
+I only care about flights that are delayed, therefore, I just extract out the data that have ArrDelay greater than 0. Then I subset the variables that I am interested to do more research.
+```{r}
+hf <- subset(hflights, ArrDelay > 0)
+sub_df <-subset(hf, select = c(Month, UniqueCarrier, ArrDelay, DepDelay), na.rm = TRUE, stringsAsFactors = FALSE)
+head(sub_df)
+```
+
+
+The following code will concatenate the year, month and date with hyphens. Then I convert the string into a date class. Afterwards, I conbine the vector with the subset of data I created earlier.
+```{r}
+flight_date <- paste (hf$Year, hf$Month, hf$DayofMonth, sep = "-")
+flight_date <- as.Date(flight_date)
+sub_df <- cbind(sub_df, flight_date)
+head(sub_df)
+```
+
+
+I am curious about if the months during the year will have any impacts on the ArrDelay. The histogram I draw shows two peak of arrival delay. One near the December and January and one near May and June. My assumption is that because of the winter break and summer break, more people will go travel, therefore causing delayed flights. However, the scatter plot I draw did not show any relationship between months and average arrival delays on the same month. 
+```{r}
+ggplot(data = sub_df) + geom_histogram(aes(x = Month), binwidth =1, fill='blue') + scale_x_continuous(breaks = 0:12)
+plot(aggregate(ArrDelay ~ Month, sub_df, mean))
+```
+
+
+I also want to investigate if any carriers have more occurences of arrival delays compared to other carriers. The bar graph shows, CO, MN, XE have much higher frequencies of arrival delays. However, this might be because they fly more often, so the more delays are going to happen. Then, I calculate the average arrival delay for each carrier and draw a graph. The scatterplot shows the previous three carriers even have relatively smaller average arrival delay. The one that has the highest is carrier called B6.
+```{r}
+ggplot(data = sub_df) + geom_bar(aes(x = UniqueCarrier), fill='blue')
+
+aggregate(ArrDelay ~ UniqueCarrier, sub_df, mean)
+
+UC <- group_by(sub_df, UniqueCarrier)
+sub_df_uc<-summarize(UC, UniqueCarrier_ArrDelay_mean = mean(ArrDelay))
+head(sub_df_uc)
+
+qplot(data = sub_df_uc, x = sub_df_uc$UniqueCarrier, y = sub_df_uc$UniqueCarrier_ArrDelay_mean, ylab = "Average Arrival Delay (Minutes)", xlab = "UniqueCarrier") 
+```
+
+
+In the end, I want to any relationship exist between DepDelay and ArrDelay. The scatterplot clealy shows strong positive relationship. The greater departure delay, the greater arrival delay. The correlation of two variables is 0.9453, which means 94.5% of the arrival delay can be explained by departure delay. Only 5.5% is due to some other reasons. 
+```{r}
+
+ggplot(data = sub_df, aes(x = DepDelay, y = ArrDelay)) + geom_point()
+with(sub_df, cor.test(DepDelay, ArrDelay, method="pearson"))
+```
