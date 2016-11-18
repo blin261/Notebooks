@@ -1,0 +1,67 @@
+---
+title: "Lin-Proposal"
+author: "Bin Lin"
+date: "2016-11-15"
+output: html_document
+---
+
+```{r, eval=TRUE}
+# load data
+raw_data <- read.table("vehicles.csv", sep = ",", stringsAsFactors = FALSE)
+View(raw_data)
+nrow(raw_data)
+```
+
+
+Research question 
+
+You should phrase your research question in a way that matches up with the scope of inference your dataset allows for.**
+
+For the final project, I want to study is there statistical significant asociation between car manufacturers and the their carbon dioxide emission.
+
+
+Cases 
+
+What are the cases, and how many are there?**
+
+The dataset I collect contains fuel economy data from the EPA, 1985-2015. There are total 34632 observations. Two variables will get analyze heavily, which are the manufactures and tail pipe carbon dioxide emission per 100 miles.
+
+
+Data collection 
+Describe the method of data collection.**
+
+Data scientist Hadley Wickham uploads this data set, it can be downloaded from the following link:
+https://github.com/hadley/fueleconomy. After we have the dataset saved in the local machine, we can just use read.table method to load into RStudio.
+
+
+Type of study 
+What type of study is this (observational/experiment)?**
+
+Observational Study, since we are not actually doing the experiment. There is no control or experimental group. All I am doing analyse an existing data.
+
+
+Data Source 
+If you collected the data, state self-collected. If not, provide a citation/link.**
+
+https://github.com/hadley/fueleconomy by Hadley Wickham
+
+
+
+Response 
+What is the response variable, and what type is it (numerical/categorical)?**
+
+The response variable is numerical, because it means the number of gallon of carbon dioxide emission per 100 mile
+
+
+Explanatory 
+What is the explanatory variable, and what type is it (numerical/categorival)?**
+
+The explanatory variable is going to be categorical (manufacturers).
+
+
+Relevant summary statistics 
+Provide summary statistics relevant to your research question. For example, if you're comparing means across groups provide means, SDs, sample sizes of each group. This step requires the use of R, hence a code chunk is provided below. Insert more code chunks as needed.**
+
+I am going to compare the means across each group. I might use one-way ANOVA test to conduct the analysis. If time permits, I might also do a two-way ANOVA test to see if I can find any association with each models' energy efficiency.
+
+
